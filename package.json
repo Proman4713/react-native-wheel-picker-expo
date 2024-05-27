@@ -1,7 +1,7 @@
 {
   "name": "react-native-wheel-picker-expo",
   "version": "0.5.4",
-  "description": "React Native wheel picker like iOS",
+  "description": "React Native iOS-style wheel picker for Android | Modified and improved",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
@@ -39,13 +39,13 @@
     "expo",
     "wheel"
   ],
-  "repository": "https://github.com/adityamr15/react-native-wheel-picker-expo",
+  "repository": "https://github.com/proman4713/react-native-wheel-picker-expo",
   "author": "Aditya Meilaz Rahmanto <adityamr15@gmail.com> (https://github.com/adityamr15)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/adityamr15/react-native-wheel-picker-expo/issues"
+    "url": "https://github.com/proman4713/react-native-wheel-picker-expo/issues"
   },
-  "homepage": "https://github.com/adityamr15/react-native-wheel-picker-expo#readme",
+  "homepage": "https://github.com/proman4713/react-native-wheel-picker-expo#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
