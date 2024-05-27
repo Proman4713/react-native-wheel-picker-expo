@@ -1,4 +1,4 @@
-import React, { PureComponent, useEffect } from 'react';
+import React, { PureComponent } from 'react';
 import {
 	FlatList,
 	Text,
@@ -166,7 +166,7 @@ class WheelPickerExpo extends PureComponent<IViuPickerProps, IViuPickerState> {
 							},
 							this.handleOnPressItem,
 							this.props.renderItem as any,
-							this.props.selectedStyle.color
+							this.props.selectedStyle?.color
 						)
 					}
 					{...flatListProps}
@@ -233,7 +233,7 @@ const PickerItem = (
 	style: any,
 	onPress: (index: number) => void,
 	renderItem: (props: RenderItemProps) => JSX.Element,
-	selectedColor
+	selectedColor: string
 ) => {
 	const gap = Math.abs(index - (indexSelected + 2));
 	const sizeText = [style.fontSize, style.fontSize / 1.5, style.fontSize / 2];
