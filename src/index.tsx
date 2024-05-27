@@ -233,7 +233,7 @@ const PickerItem = (
 	style: any,
 	onPress: (index: number) => void,
 	renderItem: (props: RenderItemProps) => JSX.Element,
-	selectedColor: string
+	selectedColor: string | undefined
 ) => {
 	const gap = Math.abs(index - (indexSelected + 2));
 	const sizeText = [style.fontSize, style.fontSize / 1.5, style.fontSize / 2];
