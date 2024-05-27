@@ -1,255 +1,279 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, useEffect } from 'react';
 import {
-  FlatList,
-  Text,
-  StyleSheet,
-  View,
-  Platform,
-  TouchableOpacity,
+	FlatList,
+	Text,
+	StyleSheet,
+	View,
+	Platform,
+	TouchableOpacity,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { adaptiveColor, setAlphaColor } from './util';
 import type {
-  ItemType,
-  IViuPickerProps,
-  IViuPickerState,
-  RenderItemProps,
+	ItemType,
+	IViuPickerProps,
+	IViuPickerState,
+	RenderItemProps,
 } from './types';
 import * as Haptics from 'expo-haptics';
 
 class WheelPickerExpo extends PureComponent<IViuPickerProps, IViuPickerState> {
-  static defaultProps = {
-    items: [],
-    backgroundColor: '#FFFFFF',
-    width: 150,
-    haptics: false,
-  };
+	static defaultProps = {
+		items: [],
+		backgroundColor: '#FFFFFF',
+		width: 150,
+		haptics: false,
+		opacity: 1,
+		noGrad: false,
+	};
 
-  flatListRef = React.createRef<FlatList>();
-  backgroundColor = setAlphaColor(this.props.backgroundColor as any, 1);
+	flatListRef = React.createRef<FlatList>();
+	backgroundColor = setAlphaColor(this.props.backgroundColor as any, this.props.opacity);
 
-  state = {
-    selectedIndex: 0,
-    itemHeight: 40,
-    listHeight: 200,
-    data: [],
-  };
+	state = {
+		selectedIndex: 0,
+		itemHeight: 40,
+		listHeight: 200,
+		data: [],
+	};
 
-  userTouch = false;
+	userTouch = false;
 
-  componentDidUpdate(prevProps: IViuPickerProps) {
-    if (this.props.items?.length !== prevProps.items?.length) {
-      this.setData();
-    }
-  }
+	componentDidUpdate(prevProps: IViuPickerProps) {
+		let itemsChanged = false;
 
-  componentDidMount() {
-    this.setData();
-  }
+		if (this.props.items.length === prevProps.items.length) {
+			itemsChanged = false;
+			this.props.items.forEach((item, index) => {
+				if ((item.label !== prevProps.items[index].label) || (item.value !== prevProps.items[index].value)) {
+					itemsChanged = true;
+				}
+			});
+		} else {
+			itemsChanged = true;
+		}
 
-  get gradientColor(): string {
-    return Platform.select({
-      ios: setAlphaColor(this.backgroundColor, 0.2),
-      android: setAlphaColor(this.backgroundColor, 0.4),
-      web: setAlphaColor(this.backgroundColor, 0.4),
-    }) as string;
-  }
+		if (itemsChanged || (this.props.height !== prevProps.height) || (this.props.width !== prevProps.width)) {
+			this.setData();
+		}
+		if (this.props.backgroundColor !== prevProps.backgroundColor) {
+			//* console.info("Before", this.props.backgroundColor);
+			this.backgroundColor = setAlphaColor(this.props.backgroundColor as any, this.props.opacity);
+			//* console.info("After", this.props.backgroundColor);
+		}
+	}
 
-  get gradientContainerStyle() {
-    const { itemHeight } = this.state;
-    const { selectedStyle } = this.props;
+	componentDidMount() {
+		this.setData();
+	}
 
-    return [
-      { height: 2 * itemHeight, borderColor: selectedStyle?.borderColor },
-      styles.gradientContainer,
-    ];
-  }
+	get gradientColor(): string {
+		return Platform.select({
+			ios: setAlphaColor(this.backgroundColor.length > 7 ? this.backgroundColor.slice(0, 7 - this.backgroundColor.length) : this.backgroundColor, 0.2),
+			android: setAlphaColor(this.backgroundColor.length > 7 ? this.backgroundColor.slice(0, 7 - this.backgroundColor.length) : this.backgroundColor, 0.4),
+			web: setAlphaColor(this.backgroundColor.length > 7 ? this.backgroundColor.slice(0, 7 - this.backgroundColor.length) : this.backgroundColor, 0.4),
+		}) as string;
+	}
 
-  handleOnSelect(index: number) {
-    const { items, onChange, haptics } = this.props;
-    const selectedIndex = Math.abs(index);
+	get gradientContainerStyle() {
+		const { itemHeight } = this.state;
+		const { selectedStyle } = this.props;
 
-    if (selectedIndex >= 0 && selectedIndex <= items.length - 1) {
-      if (
-        haptics &&
-        this.userTouch &&
-        this.state.selectedIndex !== selectedIndex
-      ) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
+		return [
+			{ height: 2 * itemHeight, borderColor: selectedStyle?.borderColor },
+			styles.gradientContainer,
+		];
+	}
 
-      this.setState({ selectedIndex });
-      onChange &&
-        onChange({ index: selectedIndex, item: items[selectedIndex] });
-    }
-  }
+	handleOnSelect(index: number) {
+		const { items, onChange, haptics } = this.props;
+		const selectedIndex = Math.abs(index);
 
-  handleOnPressItem = (index: number) => {
-    if (index >= 0 && index <= this.props.items.length - 1) {
-      this.flatListRef.current?.scrollToIndex({
-        animated: true,
-        index: index,
-      });
-    }
-  };
+		if (selectedIndex >= 0 && selectedIndex <= items.length - 1) {
+			if (
+				haptics &&
+				this.userTouch &&
+				this.state.selectedIndex !== selectedIndex
+			) {
+				Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+			}
 
-  setData() {
-    let { itemHeight, listHeight } = this.state;
-    const { items, height } = this.props;
+			this.setState({ selectedIndex });
+			onChange &&
+				onChange({ index: selectedIndex, item: items[selectedIndex] });
+		}
+	}
 
-    if (items?.length) {
-      const additionalItem = { label: '', value: null };
-      const data = [
-        additionalItem,
-        additionalItem,
-        ...items,
-        additionalItem,
-        additionalItem,
-      ] as ItemType[];
+	handleOnPressItem = (index: number) => {
+		if (index >= 0 && index <= this.props.items.length - 1) {
+			this.flatListRef.current?.scrollToIndex({
+				animated: true,
+				index: index,
+			});
+		}
+	};
 
-      if (height) {
-        listHeight = height;
-        itemHeight = listHeight / 5;
-      }
+	setData() {
+		let { itemHeight, listHeight } = this.state;
+		const { items, height } = this.props;
 
-      this.setState({ data, itemHeight, listHeight });
-    }
-  }
+		if (items?.length) {
+			const additionalItem = { label: '', value: null };
+			const data = [
+				additionalItem,
+				additionalItem,
+				...items,
+				additionalItem,
+				additionalItem,
+			] as ItemType[];
 
-  render() {
-    const { data, itemHeight, listHeight, selectedIndex } = this.state;
-    const { width, initialSelectedIndex, flatListProps, selectedStyle } =
-      this.props;
+			if (height) {
+				listHeight = height;
+				itemHeight = listHeight / 5;
+			}
 
-    if (!data.length) return;
+			this.setState({ data, itemHeight, listHeight });
+		}
+	}
 
-    return (
-      <View
-        style={{
-          height: listHeight,
-          width,
-          backgroundColor: this.backgroundColor,
-        }}
-      >
-        <FlatList
-          keyExtractor={(_, index) => index.toString()}
-          showsVerticalScrollIndicator={false}
-          renderItem={(options) =>
-            PickerItem(
-              options,
-              selectedIndex,
-              {
-                ...styles.listItem,
-                backgroundColor: this.backgroundColor,
-                fontSize: itemHeight / 2,
-                height: itemHeight,
-              },
-              this.handleOnPressItem,
-              this.props.renderItem as any
-            )
-          }
-          {...flatListProps}
-          onTouchStart={(e) => {
-            this.userTouch = true;
-            !!flatListProps?.onTouchStart && flatListProps.onTouchStart(e);
-          }}
-          ref={this.flatListRef}
-          initialScrollIndex={initialSelectedIndex}
-          data={data}
-          onScroll={(event) => {
-            let index = Math.round(
-              event.nativeEvent.contentOffset.y / itemHeight
-            );
-            this.handleOnSelect(index);
-          }}
-          getItemLayout={(_, index) => ({
-            length: itemHeight,
-            offset: index * itemHeight,
-            index,
-          })}
-          snapToInterval={itemHeight}
-        />
-        <View
-          style={[
-            this.gradientContainerStyle,
-            styles.topGradient,
-            { borderBottomWidth: selectedStyle?.borderWidth },
-          ]}
-          pointerEvents="none"
-        >
-          <LinearGradient
-            style={styles.linearGradient}
-            colors={[this.backgroundColor, this.gradientColor]}
-          />
-        </View>
-        <View
-          style={[
-            this.gradientContainerStyle,
-            styles.bottomGradient,
-            { borderTopWidth: selectedStyle?.borderWidth },
-          ]}
-          pointerEvents="none"
-        >
-          <LinearGradient
-            style={styles.linearGradient}
-            colors={[this.gradientColor, this.backgroundColor]}
-          />
-        </View>
-      </View>
-    );
-  }
+	render() {
+		const { data, itemHeight, listHeight, selectedIndex } = this.state;
+		const { width, initialSelectedIndex, flatListProps, selectedStyle } =
+			this.props;
+
+		if (!data.length) return;
+
+		return (
+			<View
+				style={{
+					height: listHeight,
+					width,
+					backgroundColor: this.backgroundColor,
+				}}
+			>
+				<FlatList
+					keyExtractor={(_, index) => index.toString()}
+					showsVerticalScrollIndicator={false}
+					renderItem={(options) =>
+						PickerItem(
+							options,
+							selectedIndex,
+							{
+								...styles.listItem,
+								backgroundColor: this.backgroundColor,
+								fontSize: itemHeight / 2,
+								height: itemHeight,
+							},
+							this.handleOnPressItem,
+							this.props.renderItem as any,
+							this.props.selectedStyle.color
+						)
+					}
+					{...flatListProps}
+					onTouchStart={(e) => {
+						this.userTouch = true;
+						!!flatListProps?.onTouchStart && flatListProps.onTouchStart(e);
+					}}
+					ref={this.flatListRef}
+					initialScrollIndex={initialSelectedIndex}
+					data={data}
+					onScroll={(event) => {
+						let index = Math.round(
+							event.nativeEvent.contentOffset.y / itemHeight
+						);
+						this.handleOnSelect(index);
+					}}
+					getItemLayout={(_, index) => ({
+						length: itemHeight,
+						offset: index * itemHeight,
+						index,
+					})}
+					snapToInterval={itemHeight}
+				/>
+				<View
+					style={[
+						this.gradientContainerStyle,
+						styles.topGradient,
+						{ borderBottomWidth: selectedStyle?.borderWidth },
+					]}
+					pointerEvents="none"
+				>
+					<LinearGradient
+						style={styles.linearGradient}
+						colors={[this.backgroundColor, this.props.noGrad ? this.backgroundColor : this.gradientColor]}
+					/>
+				</View>
+				<View
+					style={[
+						this.gradientContainerStyle,
+						styles.bottomGradient,
+						{ borderTopWidth: selectedStyle?.borderWidth },
+					]}
+					pointerEvents="none"
+				>
+					<LinearGradient
+						style={styles.linearGradient}
+						colors={[this.props.noGrad ? this.backgroundColor : this.gradientColor, this.backgroundColor]}
+					/>
+				</View>
+			</View>
+		);
+	}
 }
 
 const Item = React.memo(
-  ({ fontSize, label, fontColor, textAlign }: RenderItemProps) => (
-    <Text style={{ fontSize, color: fontColor, textAlign }}>{label}</Text>
-  )
+	({ fontSize, label, fontColor, textAlign }: RenderItemProps) => (
+		<Text style={{ fontSize, color: fontColor, textAlign }}>{label}</Text>
+	)
 );
 
 const PickerItem = (
-  { item, index }: any,
-  indexSelected: number,
-  style: any,
-  onPress: (index: number) => void,
-  renderItem: (props: RenderItemProps) => JSX.Element
+	{ item, index }: any,
+	indexSelected: number,
+	style: any,
+	onPress: (index: number) => void,
+	renderItem: (props: RenderItemProps) => JSX.Element,
+	selectedColor
 ) => {
-  const gap = Math.abs(index - (indexSelected + 2));
-  const sizeText = [style.fontSize, style.fontSize / 1.5, style.fontSize / 2];
+	const gap = Math.abs(index - (indexSelected + 2));
+	const sizeText = [style.fontSize, style.fontSize / 1.5, style.fontSize / 2];
 
-  const fontSize = gap > 1 ? sizeText[2] : sizeText[gap];
-  const fontColor = adaptiveColor(style.backgroundColor);
-  const textAlign = 'center';
+	const fontSize = gap > 1 ? sizeText[2] : sizeText[gap];
+	const fontColor = adaptiveColor(style.backgroundColor);
+	const textAlign = 'center';
 
-  return (
-    <TouchableOpacity activeOpacity={1} onPress={() => onPress(index - 2)}>
-      <View style={style}>
-        {typeof renderItem === 'function' &&
-          renderItem({ fontSize, fontColor, label: item.label, textAlign })}
-        {!renderItem && (
-          <Item
-            fontSize={fontSize}
-            fontColor={fontColor}
-            textAlign={textAlign}
-            label={item.label}
-          />
-        )}
-      </View>
-    </TouchableOpacity>
-  );
+	//* console.log("Effect", index, indexSelected, index == indexSelected + 2, item.label);
+
+	return (
+		<TouchableOpacity activeOpacity={1} onPress={() => onPress(index - 2)}>
+			<View style={style}>
+				{typeof renderItem === 'function' &&
+					renderItem({ fontSize, fontColor, label: item.label, textAlign })}
+				{!renderItem && (
+					<Item
+						fontSize={fontSize}
+						fontColor={index == indexSelected + 2 ? selectedColor || fontColor : fontColor}
+						textAlign={textAlign}
+						label={item.label}
+					/>
+				)}
+			</View>
+		</TouchableOpacity>
+	);
 };
 
 const styles = StyleSheet.create({
-  listItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  gradientContainer: {
-    position: 'absolute',
-    width: '100%',
-  },
-  linearGradient: { flex: 1 },
-  topGradient: { top: 0 },
-  bottomGradient: { bottom: 0 },
+	listItem: {
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	gradientContainer: {
+		position: 'absolute',
+		width: '100%',
+	},
+	linearGradient: { flex: 1 },
+	topGradient: { top: 0 },
+	bottomGradient: { bottom: 0 },
 });
 
 export default WheelPickerExpo;
