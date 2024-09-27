@@ -1,5 +1,5 @@
 {
-  "name": "react-native-wheel-picker-expo",
+  "name": "@proman4713/react-native-wheel-picker-expo",
   "version": "0.5.4",
   "description": "React Native iOS-style wheel picker for Android | Modified and improved",
   "main": "lib/commonjs/index",
