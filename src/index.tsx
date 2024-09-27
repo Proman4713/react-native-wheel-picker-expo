@@ -15,14 +15,12 @@ import type {
 	IViuPickerState,
 	RenderItemProps,
 } from './types';
-import * as Haptics from 'expo-haptics';
 
 class WheelPickerExpo extends PureComponent<IViuPickerProps, IViuPickerState> {
 	static defaultProps = {
 		items: [],
 		backgroundColor: '#FFFFFF',
 		width: 150,
-		haptics: false,
 		opacity: 1,
 		noGrad: false,
 	};
@@ -123,18 +121,10 @@ class WheelPickerExpo extends PureComponent<IViuPickerProps, IViuPickerState> {
 	}
 
 	handleOnSelect(index: number) {
-		const { items, onChange, haptics } = this.props;
+		const { items, onChange } = this.props;
 		const selectedIndex = Math.abs(index);
 
 		if (selectedIndex >= 0 && selectedIndex <= items.length - 1) {
-			if (
-				haptics &&
-				this.userTouch &&
-				this.state.selectedIndex !== selectedIndex
-			) {
-				Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-			}
-
 			this.setState({ selectedIndex });
 			onChange &&
 				onChange({ index: selectedIndex, item: items[selectedIndex] });
