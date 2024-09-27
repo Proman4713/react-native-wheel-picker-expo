@@ -1,6 +1,6 @@
 {
   "name": "@proman4713/react-native-wheel-picker-expo",
-  "version": "0.5.4",
+  "version": "0.6.0",
   "description": "React Native iOS-style wheel picker for Android | Modified and improved",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -52,7 +52,7 @@
   "homepage": "https://github.com/proman4713/react-native-wheel-picker-expo#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
-	"access": "public"
+    "access": "public"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^11.0.0",
