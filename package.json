@@ -40,7 +40,7 @@
     "wheel"
   ],
   "repository": "https://github.com/proman4713/react-native-wheel-picker-expo",
-  "author": "Aditya Meilaz Rahmanto <adityamr15@gmail.com> (https://github.com/adityamr15)",
+  "author": "Proman4713 <proman4713@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/proman4713/react-native-wheel-picker-expo/issues"
@@ -120,16 +120,7 @@
       "prettier"
     ],
     "rules": {
-      "prettier/prettier": [
-        "error",
-        {
-          "quoteProps": "consistent",
-          "singleQuote": true,
-          "tabWidth": 2,
-          "trailingComma": "es5",
-          "useTabs": false
-        }
-      ]
+      "prettier/prettier": 0
     }
   },
   "eslintIgnore": [
@@ -139,9 +130,9 @@
   "prettier": {
     "quoteProps": "consistent",
     "singleQuote": true,
-    "tabWidth": 2,
+    "tabWidth": 4,
     "trailingComma": "es5",
-    "useTabs": false
+    "useTabs": true
   },
   "react-native-builder-bob": {
     "source": "src",

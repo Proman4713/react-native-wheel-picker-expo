@@ -28,7 +28,10 @@ class WheelPickerExpo extends PureComponent<IViuPickerProps, IViuPickerState> {
 	};
 
 	flatListRef = React.createRef<FlatList>();
-	backgroundColor = setAlphaColor(this.props.backgroundColor as any, this.props.opacity);
+	backgroundColor = setAlphaColor(
+		this.props.backgroundColor as any,
+		this.props.opacity
+	);
 
 	state = {
 		selectedIndex: 0,
@@ -45,7 +48,10 @@ class WheelPickerExpo extends PureComponent<IViuPickerProps, IViuPickerState> {
 		if (this.props.items.length === prevProps.items.length) {
 			itemsChanged = false;
 			this.props.items.forEach((item, index) => {
-				if ((item.label !== prevProps.items[index].label) || (item.value !== prevProps.items[index].value)) {
+				if (
+					item.label !== prevProps.items[index].label ||
+					item.value !== prevProps.items[index].value
+				) {
 					itemsChanged = true;
 				}
 			});
@@ -53,12 +59,19 @@ class WheelPickerExpo extends PureComponent<IViuPickerProps, IViuPickerState> {
 			itemsChanged = true;
 		}
 
-		if (itemsChanged || (this.props.height !== prevProps.height) || (this.props.width !== prevProps.width)) {
+		if (
+			itemsChanged ||
+			this.props.height !== prevProps.height ||
+			this.props.width !== prevProps.width
+		) {
 			this.setData();
 		}
 		if (this.props.backgroundColor !== prevProps.backgroundColor) {
 			//* console.info("Before", this.props.backgroundColor);
-			this.backgroundColor = setAlphaColor(this.props.backgroundColor as any, this.props.opacity);
+			this.backgroundColor = setAlphaColor(
+				this.props.backgroundColor as any,
+				this.props.opacity
+			);
 			//* console.info("After", this.props.backgroundColor);
 		}
 	}
@@ -69,9 +82,33 @@ class WheelPickerExpo extends PureComponent<IViuPickerProps, IViuPickerState> {
 
 	get gradientColor(): string {
 		return Platform.select({
-			ios: setAlphaColor(this.backgroundColor.length > 7 ? this.backgroundColor.slice(0, 7 - this.backgroundColor.length) : this.backgroundColor, 0.2),
-			android: setAlphaColor(this.backgroundColor.length > 7 ? this.backgroundColor.slice(0, 7 - this.backgroundColor.length) : this.backgroundColor, 0.4),
-			web: setAlphaColor(this.backgroundColor.length > 7 ? this.backgroundColor.slice(0, 7 - this.backgroundColor.length) : this.backgroundColor, 0.4),
+			ios: setAlphaColor(
+				this.backgroundColor.length > 7
+					? this.backgroundColor.slice(
+							0,
+							7 - this.backgroundColor.length
+					  )
+					: this.backgroundColor,
+				0.2
+			),
+			android: setAlphaColor(
+				this.backgroundColor.length > 7
+					? this.backgroundColor.slice(
+							0,
+							7 - this.backgroundColor.length
+					  )
+					: this.backgroundColor,
+				0.4
+			),
+			web: setAlphaColor(
+				this.backgroundColor.length > 7
+					? this.backgroundColor.slice(
+							0,
+							7 - this.backgroundColor.length
+					  )
+					: this.backgroundColor,
+				0.4
+			),
 		}) as string;
 	}
 
@@ -172,7 +209,8 @@ class WheelPickerExpo extends PureComponent<IViuPickerProps, IViuPickerState> {
 					{...flatListProps}
 					onTouchStart={(e) => {
 						this.userTouch = true;
-						!!flatListProps?.onTouchStart && flatListProps.onTouchStart(e);
+						!!flatListProps?.onTouchStart &&
+							flatListProps.onTouchStart(e);
 					}}
 					ref={this.flatListRef}
 					initialScrollIndex={initialSelectedIndex}
@@ -200,7 +238,12 @@ class WheelPickerExpo extends PureComponent<IViuPickerProps, IViuPickerState> {
 				>
 					<LinearGradient
 						style={styles.linearGradient}
-						colors={[this.backgroundColor, this.props.noGrad ? this.backgroundColor : this.gradientColor]}
+						colors={[
+							this.backgroundColor,
+							this.props.noGrad
+								? this.backgroundColor
+								: this.gradientColor,
+						]}
 					/>
 				</View>
 				<View
@@ -213,7 +256,12 @@ class WheelPickerExpo extends PureComponent<IViuPickerProps, IViuPickerState> {
 				>
 					<LinearGradient
 						style={styles.linearGradient}
-						colors={[this.props.noGrad ? this.backgroundColor : this.gradientColor, this.backgroundColor]}
+						colors={[
+							this.props.noGrad
+								? this.backgroundColor
+								: this.gradientColor,
+							this.backgroundColor,
+						]}
 					/>
 				</View>
 			</View>
@@ -248,11 +296,20 @@ const PickerItem = (
 		<TouchableOpacity activeOpacity={1} onPress={() => onPress(index - 2)}>
 			<View style={style}>
 				{typeof renderItem === 'function' &&
-					renderItem({ fontSize, fontColor, label: item.label, textAlign })}
+					renderItem({
+						fontSize,
+						fontColor,
+						label: item.label,
+						textAlign,
+					})}
 				{!renderItem && (
 					<Item
 						fontSize={fontSize}
-						fontColor={index == indexSelected + 2 ? selectedColor || fontColor : fontColor}
+						fontColor={
+							index === indexSelected + 2
+								? selectedColor || fontColor
+								: fontColor
+						}
 						textAlign={textAlign}
 						label={item.label}
 					/>
